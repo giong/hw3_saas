@@ -16,10 +16,7 @@ end
 Then /I should see "(.*)" before "(.*)"/ do |e1, e2|
   #  ensure that that e1 occurs before e2.
   #  page.body is the entire content of the page as a string.
-  page_body = page.body.to_s
-  if page_body.index(e1) && page_body.index(e2)
-    page_body.index(e1) < page_body.index(e2)? true: false
-  end
+  /.*#{e1}.*#{e2}/ =~ page.body
 end
 
 # Make it easier to express checking or unchecking several boxes at once
@@ -32,10 +29,11 @@ When /I (un)?check the following ratings: (.*)/ do |uncheck, rating_list|
   #   "When I uncheck..." steps in lines 89-95 of web_steps.rb
   ratings = rating_list.split(",")
   ratings.each do |rating|
+    @element = "ratings_#{rating.strip}"
     if uncheck
-      uncheck "ratings_#{rating.strip}"
+      step %{I uncheck "#{@element}"}
     else
-      check "ratings_#{rating.strip}"
+      step %{I check "#{@element}"}
     end
   end
 end
